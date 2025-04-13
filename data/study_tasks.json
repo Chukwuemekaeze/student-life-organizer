@@ -1,15 +1,20 @@
 [
-    {
-      "title": "Revise AI & ML Lecture 4",
-      "due_date": "2025-04-15",
-      "status": "incomplete",
-      "priority": "high"
-    },
-    {
-      "title": "Start Compiler Assignment",
-      "due_date": "2025-04-18",
-      "status": "incomplete",
-      "priority": "medium"
-    }
-  ]
-  
+  {
+    "title": "Updated Task Title",
+    "due_date": "2025-04-25",
+    "status": "complete",
+    "priority": "low"
+  },
+  {
+    "title": "Revise Numerical Methods",
+    "due_date": "2025-04-19",
+    "status": "incomplete",
+    "priority": "high"
+  },
+  {
+    "title": "Practice past questions for Compiler Design",
+    "due_date": "2025-04-21",
+    "status": "incomplete",
+    "priority": "medium"
+  }
+]

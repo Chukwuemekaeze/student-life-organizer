@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import json
 import os
 
@@ -53,18 +53,85 @@ def get_journals():
     with open(os.path.join(DATA_PATH, 'journals.json')) as f:
         data = json.load(f)
     return jsonify(data)
-
+# READ STUDY TASKS
 @app.route('/resources/study_tasks')
 def get_study_tasks():
     with open(os.path.join(DATA_PATH, 'study_tasks.json')) as f:
         data = json.load(f)
     return jsonify(data)
+# ADD STUDY TASKS
+@app.route('/resources/study_tasks', methods=['POST'])
+def add_study_task():
+    try:
+        with open(os.path.join(DATA_PATH, 'study_tasks.json')) as f:
+            tasks = json.load(f)
+    except json.JSONDecodeError:
+        tasks = []
+
+    new_task = request.get_json()
+    if not new_task:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    tasks.append(new_task)
+
+    with open(os.path.join(DATA_PATH, 'study_tasks.json'), 'w') as f:
+        json.dump(tasks, f, indent=2)
+
+    return jsonify({"message": "Task added successfully", "task": new_task}), 201
+# UPDATE STUDY TASKS
+@app.route('/resources/study_tasks/<int:index>', methods=['PUT'])
+def update_study_task(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'study_tasks.json')) as f:
+            tasks = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read study tasks"}), 500
+
+    if index < 0 or index >= len(tasks):
+        return jsonify({"error": "Invalid task index"}), 404
+
+    updated_task = request.get_json()
+    if not updated_task:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    tasks[index] = updated_task
+
+    with open(os.path.join(DATA_PATH, 'study_tasks.json'), 'w') as f:
+        json.dump(tasks, f, indent=2)
+
+    return jsonify({"message": "Task updated", "task": updated_task}), 200
+# DELETE STUDY TASKS
+@app.route('/resources/study_tasks/<int:index>', methods=['DELETE'])
+def delete_study_task(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'study_tasks.json')) as f:
+            tasks = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read study tasks"}), 500
+
+    if index < 0 or index >= len(tasks):
+        return jsonify({"error": "Invalid task index"}), 404
+
+    deleted_task = tasks.pop(index)
+
+    with open(os.path.join(DATA_PATH, 'study_tasks.json'), 'w') as f:
+        json.dump(tasks, f, indent=2)
+
+    return jsonify({"message": "Task deleted", "task": deleted_task}), 200
+
 
 @app.route('/resources/notes')
 def get_notes():
     with open(os.path.join(DATA_PATH, 'notes.json')) as f:
         data = json.load(f)
     return jsonify(data)
+
+@app.route('/resources/projects')
+def get_projects():
+    with open(os.path.join(DATA_PATH, 'projects.json')) as f:
+        data = json.load(f)
+    return jsonify(data)
+
 
 
 
