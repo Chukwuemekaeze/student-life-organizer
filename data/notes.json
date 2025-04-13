@@ -1,0 +1,15 @@
+[
+    {
+      "title": "Lecture 1 - Introduction to AI",
+      "course": "CSC451",
+      "tags": ["AI", "Foundations"],
+      "summary": "Covered Turing Test, basic goals of AI, agents, and environments."
+    },
+    {
+      "title": "Lecture 2 - Machine Learning",
+      "course": "CSC451",
+      "tags": ["ML", "Supervised Learning"],
+      "summary": "Explored supervised vs unsupervised learning, key ML algorithms like decision trees and linear regression."
+    }
+  ]
+  
