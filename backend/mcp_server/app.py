@@ -42,23 +42,91 @@ def schema():
         }
     })
 
+
 @app.route('/resources/schedule')
 def get_schedule():
     with open(os.path.join(DATA_PATH, 'schedule.json')) as f:
         data = json.load(f)
     return jsonify(data)
 
+
+# READ JOURNAL ENTRIES
 @app.route('/resources/journals')
 def get_journals():
     with open(os.path.join(DATA_PATH, 'journals.json')) as f:
         data = json.load(f)
     return jsonify(data)
+
+# ADD JOURNAL ENTRIES
+@app.route('/resources/journals', methods=['POST'])
+def add_journal_entry():
+    try:
+        with open(os.path.join(DATA_PATH, 'journals.json')) as f:
+            journals = json.load(f)
+    except json.JSONDecodeError:
+        journals = []
+
+    new_entry = request.get_json()
+    if not new_entry:
+        return jsonify({"error": "Invalid JSON data"}), 400
+    
+    journals.append(new_entry)
+
+    with open(os.path.join(DATA_PATH, 'journals.json'), 'w') as f:
+        json.dump(journals, f, indent=2)
+
+    return jsonify({"message": "Journal entry added", "entry": new_entry}), 201
+
+#UPDATE JOURNAL ENTRIES
+@app.route('/resources/journals/<int:index>', methods=['PUT'])
+def update_journal_entry(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'journals.json')) as f:
+            journals = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read journal entries"}), 500
+
+    if index < 0 or index >= len(journals):
+        return jsonify({"error": "Invalid journal index"}), 404
+
+    updated_entry = request.get_json()
+    if not updated_entry:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    journals[index] = updated_entry
+
+    with open(os.path.join(DATA_PATH, 'journals.json'), 'w') as f:
+        json.dump(journals, f, indent=2)
+
+    return jsonify({"message": "Journal entry updated", "entry": updated_entry}), 200
+
+#DELETE JOURNAL ENTRIES
+@app.route('/resources/journals/<int:index>', methods=['DELETE'])
+def delete_journal_entry(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'journals.json')) as f:
+            journals = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read journal entries"}), 500
+
+    if index < 0 or index >= len(journals):
+        return jsonify({"error": "Invalid journal index"}), 404
+
+    deleted_entry = journals.pop(index)
+
+    with open(os.path.join(DATA_PATH, 'journals.json'), 'w') as f:
+        json.dump(journals, f, indent=2)
+
+    return jsonify({"message": "Journal entry deleted", "entry": deleted_entry}), 200
+
+
 # READ STUDY TASKS
 @app.route('/resources/study_tasks')
 def get_study_tasks():
     with open(os.path.join(DATA_PATH, 'study_tasks.json')) as f:
         data = json.load(f)
     return jsonify(data)
+
 # ADD STUDY TASKS
 @app.route('/resources/study_tasks', methods=['POST'])
 def add_study_task():
@@ -78,6 +146,7 @@ def add_study_task():
         json.dump(tasks, f, indent=2)
 
     return jsonify({"message": "Task added successfully", "task": new_task}), 201
+
 # UPDATE STUDY TASKS
 @app.route('/resources/study_tasks/<int:index>', methods=['PUT'])
 def update_study_task(index):
@@ -100,6 +169,7 @@ def update_study_task(index):
         json.dump(tasks, f, indent=2)
 
     return jsonify({"message": "Task updated", "task": updated_task}), 200
+
 # DELETE STUDY TASKS
 @app.route('/resources/study_tasks/<int:index>', methods=['DELETE'])
 def delete_study_task(index):

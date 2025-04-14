@@ -1,13 +1,12 @@
 [
-    {
-      "date": "2025-04-10",
-      "mood": "stressed",
-      "entry": "Had a rough day. Assignments piled up and barely made it to class on time."
-    },
-    {
-      "date": "2025-04-11",
-      "mood": "motivated",
-      "entry": "Crushed two assignments and did a full gym session. Felt good to bounce back."
-    }
-  ]
-  
+  {
+    "date": "2025-04-13",
+    "mood": "calm",
+    "entry": "Rewrote this entry for clarity."
+  },
+  {
+    "date": "2025-04-13",
+    "mood": "neutral",
+    "entry": "Pretty chill day. Did some cleanup and relaxed."
+  }
+]
