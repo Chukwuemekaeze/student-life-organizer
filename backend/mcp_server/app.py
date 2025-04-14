@@ -43,11 +43,75 @@ def schema():
     })
 
 
+#GET SCHEDULE
 @app.route('/resources/schedule')
 def get_schedule():
     with open(os.path.join(DATA_PATH, 'schedule.json')) as f:
         data = json.load(f)
     return jsonify(data)
+
+#ADD TO SCHEDULE
+@app.route('/resources/schedule', methods=['POST'])
+def add_schedule_item():
+    try:
+        with open(os.path.join(DATA_PATH, 'schedule.json')) as f:
+            schedule = json.load(f)
+    except json.JSONDecodeError:
+        schedule = []
+
+    new_item = request.get_json()
+    if not new_item:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    schedule.append(new_item)
+
+    with open(os.path.join(DATA_PATH, 'schedule.json'), 'w') as f:
+        json.dump(schedule, f, indent=2)
+
+    return jsonify({"message": "Schedule item added", "item": new_item}), 201
+
+#UPDATE SCHEDULE
+@app.route('/resources/schedule/<int:index>', methods=['PUT'])
+def update_schedule_item(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'schedule.json')) as f:
+            schedule = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read schedule"}), 500
+
+    if index < 0 or index >= len(schedule):
+        return jsonify({"error": "Invalid index"}), 404
+
+    updated_item = request.get_json()
+    if not updated_item:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    schedule[index] = updated_item
+
+    with open(os.path.join(DATA_PATH, 'schedule.json'), 'w') as f:
+        json.dump(schedule, f, indent=2)
+
+    return jsonify({"message": "Schedule updated", "item": updated_item}), 200
+
+#DELETE FROM SCHEDULE
+@app.route('/resources/schedule/<int:index>', methods=['DELETE'])
+def delete_schedule_item(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'schedule.json')) as f:
+            schedule = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read schedule"}), 500
+
+    if index < 0 or index >= len(schedule):
+        return jsonify({"error": "Invalid index"}), 404
+
+    deleted_item = schedule.pop(index)
+
+    with open(os.path.join(DATA_PATH, 'schedule.json'), 'w') as f:
+        json.dump(schedule, f, indent=2)
+
+    return jsonify({"message": "Schedule item deleted", "item": deleted_item}), 200
+
 
 
 # READ JOURNAL ENTRIES
@@ -190,17 +254,144 @@ def delete_study_task(index):
     return jsonify({"message": "Task deleted", "task": deleted_task}), 200
 
 
+#GET NOTES
 @app.route('/resources/notes')
 def get_notes():
     with open(os.path.join(DATA_PATH, 'notes.json')) as f:
         data = json.load(f)
     return jsonify(data)
 
+#ADD NOTES
+@app.route('/resources/notes', methods=['POST'])
+def add_note():
+    try:
+        with open(os.path.join(DATA_PATH, 'notes.json')) as f:
+            notes = json.load(f)
+    except json.JSONDecodeError:
+        notes = []
+
+    new_note = request.get_json()
+    if not new_note:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    notes.append(new_note)
+
+    with open(os.path.join(DATA_PATH, 'notes.json'), 'w') as f:
+        json.dump(notes, f, indent=2)
+
+    return jsonify({"message": "Note added", "note": new_note}), 201
+
+#UPDATE NOTES
+@app.route('/resources/notes/<int:index>', methods=['PUT'])
+def update_note(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'notes.json')) as f:
+            notes = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read notes"}), 500
+
+    if index < 0 or index >= len(notes):
+        return jsonify({"error": "Invalid note index"}), 404
+
+    updated_note = request.get_json()
+    if not updated_note:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    notes[index] = updated_note
+
+    with open(os.path.join(DATA_PATH, 'notes.json'), 'w') as f:
+        json.dump(notes, f, indent=2)
+
+    return jsonify({"message": "Note updated", "note": updated_note}), 200
+
+#DELET NOTES
+@app.route('/resources/notes/<int:index>', methods=['DELETE'])
+def delete_note(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'notes.json')) as f:
+            notes = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read notes"}), 500
+
+    if index < 0 or index >= len(notes):
+        return jsonify({"error": "Invalid note index"}), 404
+
+    deleted_note = notes.pop(index)
+
+    with open(os.path.join(DATA_PATH, 'notes.json'), 'w') as f:
+        json.dump(notes, f, indent=2)
+
+    return jsonify({"message": "Note deleted", "note": deleted_note}), 200
+
+
+#GET PROJECTS
 @app.route('/resources/projects')
 def get_projects():
     with open(os.path.join(DATA_PATH, 'projects.json')) as f:
         data = json.load(f)
     return jsonify(data)
+
+#ADD PROJECTS
+@app.route('/resources/projects', methods=['POST'])
+def add_project():
+    try:
+        with open(os.path.join(DATA_PATH, 'projects.json')) as f:
+            projects = json.load(f)
+    except json.JSONDecodeError:
+        projects = []
+
+    new_project = request.get_json()
+    if not new_project:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    projects.append(new_project)
+
+    with open(os.path.join(DATA_PATH, 'projects.json'), 'w') as f:
+        json.dump(projects, f, indent=2)
+
+    return jsonify({"message": "Project added", "project": new_project}), 201
+
+#UPDATE PROJECTS
+@app.route('/resources/projects/<int:index>', methods=['PUT'])
+def update_project(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'projects.json')) as f:
+            projects = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read projects"}), 500
+
+    if index < 0 or index >= len(projects):
+        return jsonify({"error": "Invalid project index"}), 404
+
+    updated_project = request.get_json()
+    if not updated_project:
+        return jsonify({"error": "Invalid JSON data"}), 400
+
+    projects[index] = updated_project
+
+    with open(os.path.join(DATA_PATH, 'projects.json'), 'w') as f:
+        json.dump(projects, f, indent=2)
+
+    return jsonify({"message": "Project updated", "project": updated_project}), 200
+
+#DELETE PROJECTS
+@app.route('/resources/projects/<int:index>', methods=['DELETE'])
+def delete_project(index):
+    try:
+        with open(os.path.join(DATA_PATH, 'projects.json')) as f:
+            projects = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Could not read projects"}), 500
+
+    if index < 0 or index >= len(projects):
+        return jsonify({"error": "Invalid project index"}), 404
+
+    deleted_project = projects.pop(index)
+
+    with open(os.path.join(DATA_PATH, 'projects.json'), 'w') as f:
+        json.dump(projects, f, indent=2)
+
+    return jsonify({"message": "Project deleted", "project": deleted_project}), 200
 
 
 
