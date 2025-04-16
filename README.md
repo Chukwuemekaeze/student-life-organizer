@@ -28,10 +28,10 @@ The Student Life Organizer is a natural-language-driven assistant designed to he
 
 ### 📥 Installation
 ```bash
-git clone https://github.com/your-username/student-life-organizer.git
+git clone https://github.com/Chukwuemekaeze/student-life-organizer.git
 cd student-life-organizer
 python -m venv venv
-source venv/Scripts/activate  # Windows
+venv/Scripts/activate  # Windows
 pip install -r requirements.txt
 ```
 
