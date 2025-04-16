@@ -1,1 +1,15 @@
-[]
+[
+    {
+      "course": "CSC451 - Artificial Intelligence",
+      "day": "Monday",
+      "time": "10:00 AM",
+      "location": "Lecture Hall A"
+    },
+    {
+      "course": "CSC411 - Compiler Construction",
+      "day": "Wednesday",
+      "time": "12:00 PM",
+      "location": "Computer Lab 2"
+    }
+  ]
+  
