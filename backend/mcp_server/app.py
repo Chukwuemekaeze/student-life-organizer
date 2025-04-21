@@ -80,9 +80,18 @@ def register_resource_routes(resource, filename):
         new_item = request.get_json()
         if not new_item:
             return jsonify({"error": "Invalid JSON data"}), 400
+
+        # Prevent exact duplicates
+        if new_item in data:
+            return jsonify({
+                "message": f"Duplicate {resource[:-1]} detected. Entry not added.",
+                resource[:-1]: new_item
+            }), 200
+
         data.append(new_item)
         save_json(filepath, data)
         return jsonify({"message": f"{resource} added", resource[:-1]: new_item}), 201
+
 
     def put(index):
         data = load_json(filepath)
