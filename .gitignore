@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.sqlite3
 .env
+SCOPE.md
+project_tracker.md

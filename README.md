@@ -21,15 +21,21 @@ The Student Life Organizer is a natural-language-driven assistant designed to he
 
 ---
 
-## 🚀 Getting Started
+## 🧭 Project Scope
+This version of the Student Life Organizer is a **local-first**, AI-powered personal academic assistant using Claude Haiku for interpreting natural language and executing structured API calls.
 
-### 🧱 Prerequisites
-- Python 3.10+
-- pip
-- An [Anthropic API key](https://console.anthropic.com/)
-- [ngrok](https://ngrok.com/) account
+### ✅ In-Scope (v1)
+- Journals, Notes, Study Tasks, Projects, Schedules
+- Full CRUD via REST and Claude API
+- Smart journal search and deletion
+- Ngrok-based local access
+- CLI/Terminal-based interaction (web UI optional later)
+- Notifications (planned)
 
-### 📥 Installation
+
+---
+
+## 📥 Installation
 ```bash
 git clone https://github.com/Chukwuemekaeze/student-life-organizer.git
 cd student-life-organizer
