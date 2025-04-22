@@ -15,6 +15,9 @@ The Student Life Organizer is a natural-language-driven assistant designed to he
 - 🔒 Secure config with `.env`
 - 🌐 Ngrok tunneling for API exposure to Claude
 - 💬 Local prompt simulation using Claude’s API
+- 🔍 Intelligent journal search via `/resources/journals/search` (supports fuzzy matching)
+- 🗑️ Smart journal deletion via natural language (search first, then delete)
+- 🧠 Automatic Claude chaining: search → select → delete without explicit user instruction
 
 ---
 
@@ -98,7 +101,9 @@ student-life-organizer/
 - [x] MCP `/schema` endpoint
 - [x] Claude API integration
 - [x] Tool use simulation (tool_use + tool_result)
-- [ ] Actually execute POST/GET calls from Claude replies
+- [x] Actually execute POST/GET calls from Claude replies
+- [x] Intelligent journal search using fuzzy query
+- [x] Automatic search-then-delete journal flow with Claude
 - [ ] Add multi-turn memory or conversational chaining
 - [ ] Create terminal-style Claude chatbot UI
 - [ ] Deploy to Hugging Face or private cloud
