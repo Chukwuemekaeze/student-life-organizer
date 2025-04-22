@@ -9,7 +9,7 @@ load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 MCP_SCHEMA_URL = os.getenv("MCP_SCHEMA_URL")
 
-user_prompt = "I want to add a journal entry saying I was mentally drained and skipped class today."
+user_prompt = "Delete the journal entry about being mentally drained and skipping class."
 
 # Step 1: Ask Claude to generate a tool_use call
 payload = {
@@ -17,11 +17,25 @@ payload = {
     "max_tokens": 1024,
     "temperature": 0.2,
     "system": (
-        "You are an API-powered assistant. When the user gives a command, you MUST respond by using the 'mcp' tool. "
+        '''You are an API-powered assistant. When the user gives a command, you MUST respond by using the 'mcp' tool. "
         "Valid endpoints include ONLY the following: "
         "/resources/journals, /resources/notes, /resources/study_tasks, /resources/projects, /resources/schedule. "
         "You must include a 'method', 'endpoint', and 'body' field in your tool call input. "
-        "Do not respond in natural language — only call the 'mcp' tool."
+        "Do not respond in natural language — only call the 'mcp' tool.
+        
+        You are an assistant that helps users manage their student life using the MCP API.
+
+        When a user wants to delete an item (e.g., a journal, note, task), follow this strategy:
+
+        1. Use the `/resources/<resource>/search` endpoint with query parameters derived from the user’s input (e.g., `?title=sad`).
+        2. Pick the entry that best matches based on title and/or content.
+        3. Then call the DELETE endpoint with the full entry (as it appears in the data) as the body.
+
+        Always confirm that the entry was successfully deleted by reporting the result.
+        After performing a search, you MUST immediately follow up with a DELETE request using the full content of the matched item.
+
+        '''
+
     ),
     "tools": [
         {
@@ -82,6 +96,75 @@ method = tool_input.get("method", "POST").upper()
 endpoint = tool_input.get("endpoint")
 body = tool_input.get("body", {})
 
+if "/search" in endpoint and method == "GET":
+    print("🧠 Claude requested a search. Performing it and following up with a DELETE...")
+
+    search_url = MCP_SCHEMA_URL.replace("/schema", "") + endpoint
+    backend_response = requests.get(search_url, params=body)
+    backend_response.raise_for_status()
+    search_results = backend_response.json()
+
+    if not search_results:
+        print("❌ No matching entries found. Nothing to delete.")
+        exit()
+
+    delete_url = MCP_SCHEMA_URL.replace("/schema", "") + endpoint.replace("/search", "")
+
+    for match_to_delete in search_results:
+        print("🗑️ Deleting:", json.dumps(match_to_delete, indent=2))
+
+        delete_response = requests.delete(
+            delete_url,
+            json=match_to_delete,
+            headers={"Content-Type": "application/json"}
+        )
+
+        delete_response.raise_for_status()
+        delete_result = delete_response.json()
+
+
+    # Send tool_result back to Claude
+    tool_result_payload = {
+        "model": "claude-3-haiku-20240307",
+        "max_tokens": 1024,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_id,
+                        "content": json.dumps(delete_result)
+                    }
+                ]
+            }
+        ],
+        "tools": payload["tools"]
+    }
+
+    final_response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        },
+        data=json.dumps(tool_result_payload)
+    )
+
+    print("\n✅ Final Claude response:\n")
+    final_json = final_response.json()
+    for block in final_json.get("content", []):
+        if block.get("type") == "text":
+            print("\n✅ Claude’s Final Reply:\n")
+            print(block["text"])
+            break
+    else:
+        print("⚠️ Claude did not return a natural language reply.")
+
+    exit()
+
+
 if not endpoint:
     print("❌ Claude did not include a valid 'endpoint' in the tool_use input.")
     exit()
@@ -102,7 +185,7 @@ try:
     elif method == "PUT":
         backend_response = requests.put(full_url, json=body)
     elif method == "DELETE":
-        backend_response = requests.delete(full_url)
+        backend_response = requests.delete(full_url, json=body, headers={"Content-Type": "application/json"})
     else:
         print(f"❌ Unsupported HTTP method: {method}")
         exit()
