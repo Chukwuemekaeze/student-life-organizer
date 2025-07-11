@@ -9,7 +9,7 @@ load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 MCP_SCHEMA_URL = os.getenv("MCP_SCHEMA_URL")
 
-user_prompt = "Delete the journal entry about being mentally drained and skipping class."
+user_prompt = "add a journal entry about being inconsistent with my study schedule"
 
 # Step 1: Ask Claude to generate a tool_use call
 payload = {
